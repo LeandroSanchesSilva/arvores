@@ -21,3 +21,8 @@ caso e outro para o caso médio), onde o eixo X representa o tamanho dos conjunt
 dados (1 a 1000) e o eixo Y representa o esforço computacional das operações (adição de
 chaves e balanceamento). Cada gráfico deve apresentar 3 linhas, as quais representam as
 respectivas operações para cada estrutura de dados avaliada.
+
+# Checklist
+[x] Implementação básica das três árvores disponibilizada pelo professor
+[ ] Implementação do método que vai gerar o csv
+[ ] Monitoramento do esforço computacional de cada árvore
