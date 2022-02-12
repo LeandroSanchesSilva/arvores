@@ -1,4 +1,12 @@
-# arvores
+# Clonar o repositório
+* git clone https://github.com/jvitormichels/arvores.git
+
+# Fluxo para mandar as alterações
+* git add .
+* git commit -m "[descreve oq tu fez]"
+* git push origin master
+
+# Descrição do trabalho, por Leandro, O Brabo
 
   O objetivo deste trabalho consiste em analisar a complexidade algorítmica das
 operações de adição de nós e balanceamento em árvores AVL, rubro-negra e B. A análise
