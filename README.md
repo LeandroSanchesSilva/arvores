@@ -24,5 +24,7 @@ respectivas operações para cada estrutura de dados avaliada.
 
 # Checklist
 [x] Implementação básica das três árvores disponibilizada pelo professor
+
 [ ] Implementação do método que vai gerar o csv
+
 [ ] Monitoramento do esforço computacional de cada árvore
