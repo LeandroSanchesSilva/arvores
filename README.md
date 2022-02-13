@@ -27,4 +27,4 @@ respectivas operações para cada estrutura de dados avaliada.
 
 [ ] Implementação do método que vai gerar o csv
 
-[ ] Monitoramento do esforço computacional de cada árvore
+[x] Monitoramento do esforço computacional de cada árvore
