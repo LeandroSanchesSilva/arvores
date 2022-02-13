@@ -5,7 +5,18 @@
 // #include "rb_tree.c"
 
 //****************************
-//√Årvore AVL
+//Vari·veis Globais
+int monitoramento_Avl_01 = 0;       // Monitoramento das execuÁıes da funÁ„o balanceamento_avl;
+int monitoramento_Avl_02 = 0;       // Monitoramento das execuÁıes da funÁ„o adicionarNo_Avl;
+
+int monitoramento_B_01 = 0;         // Monitoramento das execuÁıes da funÁ„o percorreArvore_b;
+int monitoramento_B_02 = 0;         // Monitoramento das execuÁıes da funÁ„o adicionaChaveRecursivo_b;
+
+int monitoramento_RB_01 = 0;        // Monitoramento das execuÁıes da funÁ„o adicionarNo_rb;
+int monitoramento_RB_02 = 0;        // Monitoramento das execuÁıes da funÁ„o balancear_rb;
+
+//****************************
+//¡rvore AVL
 typedef struct no_avl {
   struct no_avl * pai;
   struct no_avl * esquerda;
@@ -28,9 +39,8 @@ No_Avl * rdd_avl(Arvore_Avl * , No_Avl * );
 No_Avl * rde_avl(Arvore_Avl * , No_Avl * );
 
 Arvore_Avl * criar_avl() {
-  Arvore_Avl * arvore_avl = malloc(sizeof(Arvore_Avl));
+  Arvore_Avl * arvore_avl = (Arvore_Avl*) malloc(sizeof(Arvore_Avl));
   arvore_avl -> raiz = NULL;
-
   return arvore_avl;
 }
 
@@ -38,51 +48,57 @@ int vazia_avl(Arvore_Avl * arvore_avl) {
   return arvore_avl -> raiz == NULL;
 }
 
-No_Avl * adicionarNo_avl(No_Avl * no_avl, int valor) {
-  if (valor > no_avl -> valor) {
-    if (no_avl -> direita == NULL) {
-      printf("Adicionando %d\n", valor);
-      No_Avl * novo = malloc(sizeof(No_Avl));
-      novo -> valor = valor;
-      novo -> pai = no_avl;
+No_Avl* criarNo_Avl(Arvore_Avl* arvore_avl, No_Avl* pai, int valor) {
+    No_Avl *no_avl = malloc(sizeof(No_Avl));
 
-      no_avl -> direita = novo;
+    no_avl->pai = pai;
+    no_avl->esquerda = NULL;
+    no_avl->direita = NULL;
+    no_avl->valor = valor;
 
-      return novo;
+    if (valor < pai->valor) {
+        pai->esquerda = no_avl;
     } else {
-      return adicionarNo_avl(no_avl -> direita, valor);
+        pai->direita = no_avl;
     }
-  } else {
-    if (no_avl -> esquerda == NULL) {
-      printf("Adicionando %d\n", valor);
-      No_Avl * novo = malloc(sizeof(No_Avl));
-      novo -> valor = valor;
-      novo -> pai = no_avl;
 
-      no_avl -> esquerda = novo;
-
-      return novo;
-    } else {
-      return adicionarNo_avl(no_avl -> esquerda, valor);
-    }
-  }
-}
-
-No_Avl * adicionar_avl(Arvore_Avl * arvore_avl, int valor) {
-  if (arvore_avl -> raiz == NULL) {
-    printf("Adicionando %d\n", valor);
-    No_Avl * novo = malloc(sizeof(No_Avl));
-    novo -> valor = valor;
-
-    arvore_avl -> raiz = novo;
-
-    return novo;
-  } else {
-    No_Avl * no_avl = adicionarNo_avl(arvore_avl -> raiz, valor);
-    balanceamento_avl(arvore_avl, no_avl);
+    balanceamento_avl(arvore_avl, pai);
 
     return no_avl;
-  }
+}
+
+No_Avl* adicionarNo_Avl(Arvore_Avl* arvore_avl, No_Avl* no_avl, int valor) {
+    monitoramento_Avl_02++;              // Monitoramento das execuÁıes da funÁ„o adicionarNo_Avl   
+    if (valor < no_avl->valor) {
+        if (no_avl->esquerda == NULL) {
+            return criarNo_Avl(arvore_avl, no_avl, valor);
+        } else {
+            return adicionarNo_Avl(arvore_avl, no_avl->esquerda, valor);
+        }
+    } else {
+        if (no_avl->direita == NULL) {
+            return criarNo_Avl(arvore_avl, no_avl, valor);
+        } else {
+            return adicionarNo_Avl(arvore_avl, no_avl->direita, valor);
+        }
+    }
+}
+
+No_Avl* adicionar_Avl(Arvore_Avl* arvore_avl, int valor) {
+    if (vazia_avl(arvore_avl)) {
+        No_Avl *no_avl = malloc(sizeof(No_Avl));
+
+        no_avl->pai = NULL;
+        no_avl->esquerda = NULL;
+        no_avl->direita = NULL;
+        no_avl->valor = valor;
+
+        arvore_avl->raiz = no_avl;
+
+        return no_avl;
+    } else {
+        return adicionarNo_Avl(arvore_avl, arvore_avl->raiz, valor);
+    }
 }
 
 void remover_avl(Arvore_Avl * arvore_avl, No_Avl * no_avl) {
@@ -154,26 +170,27 @@ void visitar_avl(int valor) {
 }
 
 void balanceamento_avl(Arvore_Avl * arvore_avl, No_Avl * no_avl) {
+    monitoramento_Avl_01++;       // Monitoramento das execuÁıes da funÁ„o balanceamento_avl;
   while (no_avl != NULL) {
     int fator = fb_avl(no_avl);
 
-    if (fator > 1) { //√°rvore mais pesada para esquerda
-      //rota√ß√£o para a direita
+    if (fator > 1) { //·rvore mais pesada para esquerda
+      //rotaÁ„o para a direita
       if (fb_avl(no_avl -> esquerda) > 0) {
         printf("RSD(%d)\n", no_avl -> valor);
-        rsd_avl(arvore_avl, no_avl); //rota√ß√£o simples a direita, pois o FB do filho tem sinal igual
+        rsd_avl(arvore_avl, no_avl); //rotaÁ„o simples a direita, pois o FB do filho tem sinal igual
       } else {
         printf("RDD(%d)\n", no_avl -> valor);
-        rdd_avl(arvore_avl, no_avl); //rota√ß√£o dupla a direita, pois o FB do filho tem sinal diferente
+        rdd_avl(arvore_avl, no_avl); //rotaÁ„o dupla a direita, pois o FB do filho tem sinal diferente
       }
-    } else if (fator < -1) { //√°rvore mais pesada para a direita
-      //rota√ß√£o para a esquerda
+    } else if (fator < -1) { //·rvore mais pesada para a direita
+      //rotaÁ„o para a esquerda
       if (fb_avl(no_avl -> direita) < 0) {
         printf("RSE(%d)\n", no_avl -> valor);
-        rse_avl(arvore_avl, no_avl); //rota√ß√£o simples a esquerda, pois o FB do filho tem sinal igual
+        rse_avl(arvore_avl, no_avl); //rotaÁ„o simples a esquerda, pois o FB do filho tem sinal igual
       } else {
         printf("RDE(%d)\n", no_avl -> valor);
-        rde_avl(arvore_avl, no_avl); //rota√ß√£o dupla a esquerda, pois o FB do filho tem sinal diferente
+        rde_avl(arvore_avl, no_avl); //rotaÁ„o dupla a esquerda, pois o FB do filho tem sinal diferente
       }
     }
 
@@ -264,31 +281,15 @@ No_Avl * rdd_avl(Arvore_Avl * arvore_avl, No_Avl * no_avl) {
   no_avl -> esquerda = rse_avl(arvore_avl, no_avl -> esquerda);
   return rsd_avl(arvore_avl, no_avl);
 }
-// √Årvore AVL
+// ¡rvore AVL
 //***************************************
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ************************
-// √Årvore B
+// ¡rvore B
 typedef struct no_b {
   int total;
   int * chaves;
@@ -342,6 +343,7 @@ No_B * criaNo_b(ArvoreB * arvore) {
 }
 
 void percorreArvore_b(No_B * no_b) {
+    monitoramento_B_01++;       // Monitoramento das execuÁıes da funÁ„o percorreArvore_b;
   if (no_b != NULL) {
     for (int i = 0; i < no_b -> total; i++) {
       percorreArvore_b(no_b -> filhos[i]); //visita o filho a esquerda
@@ -369,7 +371,7 @@ int pesquisaBinaria_b(No_B * no_b, int chave) {
       inicio = meio + 1;
     }
   }
-  return inicio; //n√£o encontrou	
+  return inicio; //n„o encontrou	
 }
 
 int localizaChave_b(ArvoreB * arvore, int chave) {
@@ -385,7 +387,7 @@ int localizaChave_b(ArvoreB * arvore, int chave) {
     }
   }
 
-  return 0; //n√£o encontrou	
+  return 0; //n„o encontrou	
 }
 
 No_B * localizaNo_b(ArvoreB * arvore, int chave) {
@@ -397,12 +399,12 @@ No_B * localizaNo_b(ArvoreB * arvore, int chave) {
     int i = pesquisaBinaria_b(no_b, chave);
 
     if (no_b -> filhos[i] == NULL)
-      return no_b; //encontrou n√≥
+      return no_b; //encontrou nÛ
     else
       no_b = no_b -> filhos[i];
   }
 
-  return NULL; //n√£o encontrou nenhum n√≥
+  return NULL; //n„o encontrou nenhum nÛ
 }
 
 void adicionaChaveNo_b(No_B * no_b, No_B * novo, int chave) {
@@ -449,6 +451,8 @@ No_B * divideNo_h(ArvoreB * arvore, No_B * no_b) {
 }
 
 void adicionaChaveRecursivo_b(ArvoreB * arvore, No_B * no_b, No_B * novo, int chave) {
+    
+    monitoramento_B_02++;         // Monitoramento das execuÁıes da funÁ„o adicionaChaveRecursivo_b;
   contador++;
 
   adicionaChaveNo_b(no_b, novo, chave);
@@ -477,24 +481,15 @@ void adicionaChave_b(ArvoreB * arvore, int chave) {
 
   adicionaChaveRecursivo_b(arvore, no_b, NULL, chave);
 }
-// √Årvore B
+// ¡rvore B
 //******************************
 
 
 
 
 
-
-
-
-
-
-
-
-
-
 //**********************************
-// √Årvore Rubro Negra
+// ¡rvore Rubro Negra
 enum coloracao {
   Vermelho,
   Preto
@@ -553,6 +548,7 @@ No_Rb * criarNo_rb(Arvore_Rb * arvore_rb, No_Rb * pai, int valor) {
 }
 
 No_Rb * adicionarNo_rb(Arvore_Rb * arvore_rb, No_Rb * no_rb, int valor) {
+    monitoramento_RB_01++;        // Monitoramento das execuÁıes da funÁ„o adicionarNo_rb;
   if (valor > no_rb -> valor) {
     if (no_rb -> direita == arvore_rb -> nulo) {
       no_rb -> direita = criarNo_rb(arvore_rb, no_rb, valor);
@@ -634,6 +630,7 @@ void visitar_rb(int valor) {
 }
 
 void balancear_rb(Arvore_Rb * arvore_rb, No_Rb * no_rb) {
+    monitoramento_RB_02++;        // Monitoramento das execuÁıes da funÁ„o balancear_rb;
   while (no_rb -> pai -> cor == Vermelho) {
     if (no_rb -> pai == no_rb -> pai -> pai -> esquerda) {
       No_Rb * tio = no_rb -> pai -> pai -> direita;
@@ -675,7 +672,7 @@ void balancear_rb(Arvore_Rb * arvore_rb, No_Rb * no_rb) {
       }
     }
   }
-  arvore_rb -> raiz -> cor = Preto; //Conserta poss√≠vel quebra regra 2
+  arvore_rb -> raiz -> cor = Preto; //Conserta possÌvel quebra regra 2
 }
 
 void rotacionarEsquerda_rb(Arvore_Rb * arvore_rb, No_Rb * no_rb) {
@@ -721,15 +718,8 @@ void rotacionarDireita_rb(Arvore_Rb * arvore_rb, No_Rb * no_rb) {
   esquerda -> direita = no_rb;
   no_rb -> pai = esquerda;
 }
-// √Årvore Rubro Negra
+// ¡rvore Rubro Negra
 //********************************
-
-
-
-
-
-
-
 
 
 
@@ -741,11 +731,15 @@ void rotacionarDireita_rb(Arvore_Rb * arvore_rb, No_Rb * no_rb) {
 void test_avl_tree() {
     Arvore_Avl* a = criar_avl();
 
-    for (int i = 1; i <= 7; i++) {
-        adicionar_avl(a,i);  
-    }
+    adicionar_Avl(a, 2);
+    adicionar_Avl(a, 8);
+    adicionar_Avl(a, 1);
+    adicionar_Avl(a, 3);
+    adicionar_Avl(a, 6);
+    adicionar_Avl(a, 9);
+    adicionar_Avl(a, 5);
 
-    printf("In-order: ");
+    printf("In-order:\n");
     percorrerProfundidadeInOrder_avl(a->raiz,visitar_avl);
     printf("\n");
 }
@@ -765,11 +759,11 @@ void test_b_tree() {
 
   percorreArvore_b(arvore -> raiz);
 
-  printf("\nN√∫mero de opera√ß√µes: %d\n", contador);
+  printf("\nN˙mero de operaÁıes: %d\n", contador);
 
 }
 
-int test_rb_tree() {
+void test_rb_tree() {
     Arvore_Rb* a = criar_rb();
 
     adicionar_rb(a,7);
@@ -780,18 +774,28 @@ int test_rb_tree() {
     adicionar_rb(a,2);
     adicionar_rb(a,1);
 
-    printf("In-order: ");
+    printf("In-order:\n");
     percorrerProfundidadeInOrder_rb(a, a->raiz,visitar_rb);
-    printf("\n");
+    printf("\n\n");
+}
+
+void monitoramento() {
+    printf("Iteracoes da funÁ„o balanceamento_avl: %d\n",         monitoramento_Avl_01);
+    printf("Iteracoes da funÁ„o adicionarNo_Avl: %d\n",           monitoramento_Avl_02);
+    printf("Iteracoes da funÁ„o percorreArvore_b: %d\n",          monitoramento_B_01);
+    printf("Iteracoes da funÁ„o adicionaChaveRecursivo_b: %d\n",  monitoramento_B_02);
+    printf("Iteracoes da funÁ„o adicionarNo_rb: %d\n",            monitoramento_RB_01);
+    printf("Iteracoes da funÁ„o balancear_rb: %d\n",              monitoramento_RB_02); 
 }
 
 int main() {
-  printf("\n\n√Årvore AVL\n");
+  printf("\n¡rvore AVL\n");
   test_avl_tree();
-  printf("\n\n√Årvore B\n");
+  printf("\n\n¡rvore B\n");
   test_b_tree();
-  printf("\n\n√Årvore Rubro Negra\n");
+  printf("\n\n¡rvore Rubro Negra\n");
   test_rb_tree();
+  monitoramento();
 
   return 0;
 }
