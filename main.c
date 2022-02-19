@@ -1,22 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>                               // utilizar o clock do pc para gerar os numeros aleatoriamente
+
+# define TAM 20                                 // número de conjuntos a serem gerados
+
 // #include "avl_tree.c"
 // #include "b_tree.c"
 // #include "rb_tree.c"
 
 //****************************
-//Vari�veis Globais
-int monitoramento_Avl_01 = 0;       // Monitoramento das execu��es da fun��o balanceamento_avl;
-int monitoramento_Avl_02 = 0;       // Monitoramento das execu��es da fun��o adicionarNo_Avl;
 
-int monitoramento_B_01 = 0;         // Monitoramento das execu��es da fun��o percorreArvore_b;
-int monitoramento_B_02 = 0;         // Monitoramento das execu��es da fun��o adicionaChaveRecursivo_b;
+//Variáveis Globais
+int monitoramento_Avl_01 = 0;       // Monitoramento das execuções da função balanceamento_avl;
+int monitoramento_Avl_02 = 0;       // Monitoramento das execuções da função adicionarNo_Avl;
 
-int monitoramento_RB_01 = 0;        // Monitoramento das execu��es da fun��o adicionarNo_rb;
-int monitoramento_RB_02 = 0;        // Monitoramento das execu��es da fun��o balancear_rb;
+int monitoramento_B_01 = 0;         // Monitoramento das execuções da função percorreArvore_b;
+int monitoramento_B_02 = 0;         // Monitoramento das execuções da função adicionaChaveRecursivo_b;
+
+int monitoramento_RB_01 = 0;        // Monitoramento das execuções da função adicionarNo_rb;
+int monitoramento_RB_02 = 0;        // Monitoramento das execuções da função balancear_rb;
 
 //****************************
-//�rvore AVL
+//Árvore AVL
 typedef struct no_avl {
   struct no_avl * pai;
   struct no_avl * esquerda;
@@ -68,7 +73,7 @@ No_Avl* criarNo_Avl(Arvore_Avl* arvore_avl, No_Avl* pai, int valor) {
 }
 
 No_Avl* adicionarNo_Avl(Arvore_Avl* arvore_avl, No_Avl* no_avl, int valor) {
-    monitoramento_Avl_02++;              // Monitoramento das execu��es da fun��o adicionarNo_Avl   
+    monitoramento_Avl_02++;              // Monitoramento das execuções da função adicionarNo_Avl   
     if (valor < no_avl->valor) {
         if (no_avl->esquerda == NULL) {
             return criarNo_Avl(arvore_avl, no_avl, valor);
@@ -86,6 +91,7 @@ No_Avl* adicionarNo_Avl(Arvore_Avl* arvore_avl, No_Avl* no_avl, int valor) {
 
 No_Avl* adicionar_Avl(Arvore_Avl* arvore_avl, int valor) {
     if (vazia_avl(arvore_avl)) {
+        monitoramento_Avl_02++;
         No_Avl *no_avl = malloc(sizeof(No_Avl));
 
         no_avl->pai = NULL;
@@ -170,27 +176,27 @@ void visitar_avl(int valor) {
 }
 
 void balanceamento_avl(Arvore_Avl * arvore_avl, No_Avl * no_avl) {
-    monitoramento_Avl_01++;       // Monitoramento das execu��es da fun��o balanceamento_avl;
+    monitoramento_Avl_01++;       // Monitoramento das execuções da função balanceamento_avl;
   while (no_avl != NULL) {
     int fator = fb_avl(no_avl);
 
-    if (fator > 1) { //�rvore mais pesada para esquerda
-      //rota��o para a direita
+    if (fator > 1) { //árvore mais pesada para esquerda
+      //rotação para a direita
       if (fb_avl(no_avl -> esquerda) > 0) {
-        printf("RSD(%d)\n", no_avl -> valor);
-        rsd_avl(arvore_avl, no_avl); //rota��o simples a direita, pois o FB do filho tem sinal igual
+        //printf("RSD(%d)\n", no_avl -> valor);
+        rsd_avl(arvore_avl, no_avl); //rotação simples a direita, pois o FB do filho tem sinal igual
       } else {
-        printf("RDD(%d)\n", no_avl -> valor);
-        rdd_avl(arvore_avl, no_avl); //rota��o dupla a direita, pois o FB do filho tem sinal diferente
+        //printf("RDD(%d)\n", no_avl -> valor);
+        rdd_avl(arvore_avl, no_avl); //rotação dupla a direita, pois o FB do filho tem sinal diferente
       }
-    } else if (fator < -1) { //�rvore mais pesada para a direita
-      //rota��o para a esquerda
+    } else if (fator < -1) { //árvore mais pesada para a direita
+      //rotação para a esquerda
       if (fb_avl(no_avl -> direita) < 0) {
-        printf("RSE(%d)\n", no_avl -> valor);
-        rse_avl(arvore_avl, no_avl); //rota��o simples a esquerda, pois o FB do filho tem sinal igual
+        //printf("RSE(%d)\n", no_avl -> valor);
+        rse_avl(arvore_avl, no_avl); //rotação simples a esquerda, pois o FB do filho tem sinal igual
       } else {
-        printf("RDE(%d)\n", no_avl -> valor);
-        rde_avl(arvore_avl, no_avl); //rota��o dupla a esquerda, pois o FB do filho tem sinal diferente
+        //printf("RDE(%d)\n", no_avl -> valor);
+        rde_avl(arvore_avl, no_avl); //rotação dupla a esquerda, pois o FB do filho tem sinal diferente
       }
     }
 
@@ -281,15 +287,11 @@ No_Avl * rdd_avl(Arvore_Avl * arvore_avl, No_Avl * no_avl) {
   no_avl -> esquerda = rse_avl(arvore_avl, no_avl -> esquerda);
   return rsd_avl(arvore_avl, no_avl);
 }
-// �rvore AVL
+// Árvore AVL
 //***************************************
 
-
-
-
-
 // ************************
-// �rvore B
+// Árvore B
 typedef struct no_b {
   int total;
   int * chaves;
@@ -343,7 +345,7 @@ No_B * criaNo_b(ArvoreB * arvore) {
 }
 
 void percorreArvore_b(No_B * no_b) {
-    monitoramento_B_01++;       // Monitoramento das execu��es da fun��o percorreArvore_b;
+    monitoramento_B_01++;       // Monitoramento das execuções da função percorreArvore_b;
   if (no_b != NULL) {
     for (int i = 0; i < no_b -> total; i++) {
       percorreArvore_b(no_b -> filhos[i]); //visita o filho a esquerda
@@ -371,7 +373,7 @@ int pesquisaBinaria_b(No_B * no_b, int chave) {
       inicio = meio + 1;
     }
   }
-  return inicio; //n�o encontrou	
+  return inicio; //não encontrou	
 }
 
 int localizaChave_b(ArvoreB * arvore, int chave) {
@@ -387,7 +389,7 @@ int localizaChave_b(ArvoreB * arvore, int chave) {
     }
   }
 
-  return 0; //n�o encontrou	
+  return 0; //não encontrou	
 }
 
 No_B * localizaNo_b(ArvoreB * arvore, int chave) {
@@ -399,12 +401,12 @@ No_B * localizaNo_b(ArvoreB * arvore, int chave) {
     int i = pesquisaBinaria_b(no_b, chave);
 
     if (no_b -> filhos[i] == NULL)
-      return no_b; //encontrou n�
+      return no_b; //encontrou nó
     else
       no_b = no_b -> filhos[i];
   }
 
-  return NULL; //n�o encontrou nenhum n�
+  return NULL; //não encontrou nenhum nó
 }
 
 void adicionaChaveNo_b(No_B * no_b, No_B * novo, int chave) {
@@ -452,7 +454,7 @@ No_B * divideNo_h(ArvoreB * arvore, No_B * no_b) {
 
 void adicionaChaveRecursivo_b(ArvoreB * arvore, No_B * no_b, No_B * novo, int chave) {
     
-    monitoramento_B_02++;         // Monitoramento das execu��es da fun��o adicionaChaveRecursivo_b;
+    monitoramento_B_02++;         // Monitoramento das execuções da função adicionaChaveRecursivo_b;
   contador++;
 
   adicionaChaveNo_b(no_b, novo, chave);
@@ -481,15 +483,11 @@ void adicionaChave_b(ArvoreB * arvore, int chave) {
 
   adicionaChaveRecursivo_b(arvore, no_b, NULL, chave);
 }
-// �rvore B
+// Árvore B
 //******************************
 
-
-
-
-
 //**********************************
-// �rvore Rubro Negra
+// Árvore Rubro Negra
 enum coloracao {
   Vermelho,
   Preto
@@ -548,7 +546,7 @@ No_Rb * criarNo_rb(Arvore_Rb * arvore_rb, No_Rb * pai, int valor) {
 }
 
 No_Rb * adicionarNo_rb(Arvore_Rb * arvore_rb, No_Rb * no_rb, int valor) {
-    monitoramento_RB_01++;        // Monitoramento das execu��es da fun��o adicionarNo_rb;
+    monitoramento_RB_01++;        // Monitoramento das execuções da função adicionarNo_rb;
   if (valor > no_rb -> valor) {
     if (no_rb -> direita == arvore_rb -> nulo) {
       no_rb -> direita = criarNo_rb(arvore_rb, no_rb, valor);
@@ -572,6 +570,7 @@ No_Rb * adicionarNo_rb(Arvore_Rb * arvore_rb, No_Rb * no_rb, int valor) {
 
 No_Rb * adicionar_rb(Arvore_Rb * arvore_rb, int valor) {
   if (vazia_rb(arvore_rb)) {
+    monitoramento_RB_01++;      // Monitoramento das execuções da função adicionarNo_rb;
     arvore_rb -> raiz = criarNo_rb(arvore_rb, arvore_rb -> nulo, valor);
     arvore_rb -> raiz -> cor = Preto;
 
@@ -630,7 +629,7 @@ void visitar_rb(int valor) {
 }
 
 void balancear_rb(Arvore_Rb * arvore_rb, No_Rb * no_rb) {
-    monitoramento_RB_02++;        // Monitoramento das execu��es da fun��o balancear_rb;
+    monitoramento_RB_02++;        // Monitoramento das execuções da função balancear_rb;
   while (no_rb -> pai -> cor == Vermelho) {
     if (no_rb -> pai == no_rb -> pai -> pai -> esquerda) {
       No_Rb * tio = no_rb -> pai -> pai -> direita;
@@ -672,7 +671,7 @@ void balancear_rb(Arvore_Rb * arvore_rb, No_Rb * no_rb) {
       }
     }
   }
-  arvore_rb -> raiz -> cor = Preto; //Conserta poss�vel quebra regra 2
+  arvore_rb -> raiz -> cor = Preto; //Conserta possível quebra regra 2
 }
 
 void rotacionarEsquerda_rb(Arvore_Rb * arvore_rb, No_Rb * no_rb) {
@@ -718,15 +717,10 @@ void rotacionarDireita_rb(Arvore_Rb * arvore_rb, No_Rb * no_rb) {
   esquerda -> direita = no_rb;
   no_rb -> pai = esquerda;
 }
-// �rvore Rubro Negra
+// Árvore Rubro Negra
 //********************************
 
-
-
-
-
 //*************************************
-// Main
 
 void test_avl_tree() {
     Arvore_Avl* a = criar_avl();
@@ -759,7 +753,7 @@ void test_b_tree() {
 
   percorreArvore_b(arvore -> raiz);
 
-  printf("\nN�mero de opera��es: %d\n", contador);
+  printf("\nNúmero de operações: %d\n", contador);
 
 }
 
@@ -780,25 +774,350 @@ void test_rb_tree() {
 }
 
 void monitoramento() {
-    printf("Iteracoes da fun��o balanceamento_avl: %d\n",         monitoramento_Avl_01);
-    printf("Iteracoes da fun��o adicionarNo_Avl: %d\n",           monitoramento_Avl_02);
-    printf("Iteracoes da fun��o percorreArvore_b: %d\n",          monitoramento_B_01);
-    printf("Iteracoes da fun��o adicionaChaveRecursivo_b: %d\n",  monitoramento_B_02);
-    printf("Iteracoes da fun��o adicionarNo_rb: %d\n",            monitoramento_RB_01);
-    printf("Iteracoes da fun��o balancear_rb: %d\n",              monitoramento_RB_02); 
+    printf("Iteracoes da função balanceamento_avl: %d\n",         monitoramento_Avl_01);
+    printf("Iteracoes da função adicionarNo_Avl: %d\n",           monitoramento_Avl_02);
+    printf("Iteracoes da função percorreArvore_b: %d\n",          monitoramento_B_01);
+    printf("Iteracoes da função adicionaChaveRecursivo_b: %d\n",  monitoramento_B_02);
+    printf("Iteracoes da função adicionarNo_rb: %d\n",            monitoramento_RB_01);
+    printf("Iteracoes da função balancear_rb: %d\n",              monitoramento_RB_02); 
+}
+
+//********************************
+
+    // media1 -> Complexidade da árvore AVL para o Caso Médio
+    // media2 -> Complexidade da árvore B para o Caso Médio
+    // media3 -> Complexidade da árvore Rubro-negra para o Caso Médio
+    // media4 -> Complexidade da árvore Rubro-negra para o Pior Caso
+
+//********************************
+
+void media1() {
+    srand(time(NULL));                              // seed para a geração dos números aleatórios;
+
+    int *conjunto, *media1;
+    int i, j, k, igual, tam;
+
+    media1 = malloc(TAM * sizeof(int));             // vetor de respostas, conforme o número de conjuntos
+
+    
+    for( i=0; i<TAM; i++ ){                         // inicializando media1          
+        *(media1 + i) = 0; 
+    }
+    
+    for( tam = 1; tam <= TAM; tam++ ){          // neste FOR definimos o número de conjuntos a serem criados
+            conjunto = malloc(tam * sizeof(int));   // alocação de memória para o vetor, conforme o número de elementos
+            
+
+            for( i=0; i<tam; i++ ){                 // a partir deste FOR criamos as chaves
+                *(conjunto + i) = rand()%100;           // aritmética de ponteiros.
+
+                igual = 0;                         
+                for( j = 0; j < i; j++ ){           // este FOR garante que nenhuma chave se repetirá
+                    if( conjunto[j] == conjunto[i] )
+                        igual = 1;
+                }
+
+                if (igual == 1)
+                    i--;            
+            }
+            
+            Arvore_Avl* a = criar_avl();
+            //printf("\n Conjunto %d: \n", tam);
+            for(i = 0; i < tam; i++){
+                //printf("%d ", *(conjunto + i));   // imprime o conteúdo desta região de memória
+                adicionar_Avl(a, *(conjunto + i));  // adicionando todos as chaves do conjunto na árvore criada
+            }
+
+            *( media1 + tam - 1 ) = *( media1 + tam - 1 ) + monitoramento_Avl_01 + monitoramento_Avl_02;
+
+            /*                                      // teste AVL
+            printf("\n");
+            printf("In-order:\n");
+            percorrerProfundidadeInOrder_avl(a->raiz,visitar_avl);
+            printf("\n Complexidade Total AVL:  %d  \n", monitoramento_Avl_01+monitoramento_Avl_02);
+            */
+
+            /*
+            printf("\nTestando media1: %d\n", *( media1 + tam - 1 ));
+            for(i = 0; i < tam; i++){
+                printf("%d ", *(media1 + i)); //imprime o conteúdo desta região de memória
+            }
+            */
+
+            monitoramento_Avl_01 = 0;
+            monitoramento_Avl_02 = 0;
+
+            free (conjunto);              // desalocando a memória        
+        }
+
+    printf("\n Complexidade Total AVL: \n");
+    for(i = 0; i < TAM; i++){
+        printf("%d ", *(media1 + i));            // imprime a média do conteúdo desta região de memória
+    }
+    free (media1);                       // desalocando a memória
+    printf("\n");  
+}
+
+void media2() {
+    srand(time(NULL));                              // seed para a geração dos números aleatórios;
+
+    int *conjunto, *media2;
+    int i, j, k, igual, tam;
+
+    media2 = malloc(TAM * sizeof(int));             // vetor de respostas, conforme o número de conjuntos
+
+    
+    for( i=0; i<TAM; i++ ){                         // inicializando media2          
+        *(media2 + i) = 0; 
+    }
+    
+    for( k=0; k<10; k++ ){                          // Looping para Validação estatística
+        for( tam = 1; tam <= TAM; tam++ ){          // neste FOR definimos o número de conjuntos a serem criados
+            conjunto = malloc(tam * sizeof(int));   // alocação de memória para o vetor, conforme o número de elementos
+            
+
+            for( i=0; i<tam; i++ ){                 // a partir deste FOR criamos as chaves
+                *(conjunto + i) = rand();           // aritmética de ponteiros.
+
+                igual = 0;                         
+                for( j = 0; j < i; j++ ){           // este FOR garante que nenhuma chave se repetirá
+                    if( conjunto[j] == conjunto[i] )
+                        igual = 1;
+                }
+
+                if (igual == 1)
+                    i--;            
+            }
+            
+            ArvoreB* a = criaArvore_b(1);           // Quanto maior a ordem da árvore, menos nós são criados!
+            for(i = 0; i < tam; i++){
+                adicionaChave_b(a, *(conjunto + i));// adicionando todos as chaves do conjunto na árvore criada
+            }
+
+            *( media2 + tam - 1 ) = *( media2 + tam - 1 ) + monitoramento_B_01 + monitoramento_B_02;
+
+            monitoramento_B_01 = 0;
+            monitoramento_B_02 = 0;
+
+            free (conjunto);              // desalocando a memória        
+        }
+    }
+
+    printf("\n Complexidade Total B: \n");
+    for(i = 0; i < TAM; i++){
+        printf("%d ", *(media2 + i)/10);            // imprime a média do conteúdo desta região de memória
+    }
+    free (media2);                       // desalocando a memória
+    printf("\n");  
+}
+
+void media3() {
+    srand(time(NULL));                              // seed para a geração dos números aleatórios;
+
+    int *conjunto, *media3;
+    int i, j, k, igual, tam;
+
+    media3 = malloc(TAM * sizeof(int));             // vetor de respostas, conforme o número de conjuntos
+
+    
+    for( i=0; i<TAM; i++ ){                         // inicializando media3          
+        *(media3 + i) = 0; 
+    }
+    
+    for( k=0; k<10; k++ ){                          // Looping para Validação estatística
+        for( tam = 1; tam <= TAM; tam++ ){          // neste FOR definimos o número de conjuntos a serem criados
+            conjunto = malloc(tam * sizeof(int));   // alocação de memória para o vetor, conforme o número de elementos
+            
+
+            for( i=0; i<tam; i++ ){                 // a partir deste FOR criamos as chaves
+                *(conjunto + i) = rand();      // aritmética de ponteiros.
+
+                igual = 0;                         
+                for( j = 0; j < i; j++ ){           // este FOR garante que nenhuma chave se repetirá
+                    if( conjunto[j] == conjunto[i] )
+                        igual = 1;
+                }
+
+                if (igual == 1)
+                    i--;            
+            }
+            
+            Arvore_Rb* a = criar_rb();          
+            for(i = 0; i < tam; i++){
+                adicionar_rb(a, *(conjunto + i));// adicionando todos as chaves do conjunto na árvore criada
+            }
+
+            *( media3 + tam - 1 ) = *( media3 + tam - 1 ) + monitoramento_RB_01 + monitoramento_RB_02;
+
+            monitoramento_RB_01 = 0;
+            monitoramento_RB_02 = 0;
+
+            free (conjunto);              // desalocando a memória  
+        }
+    }
+
+    printf("\n Complexidade Total Rubro-negra: \n");
+    for(i = 0; i < TAM; i++){
+        printf("%d ", *(media3 + i)/10);            // imprime a média do conteúdo desta região de memória
+    }
+    free (media3);                       // desalocando a memória
+    printf("\n");  
+}
+
+void media4() {
+
+    int *conjunto, *media4;
+    int i, j, k, igual, valor, tam;
+
+    media4 = malloc(TAM * sizeof(int));             // vetor de respostas, conforme o número de conjuntos
+
+    
+    for( i=0; i<TAM; i++ ){                         // inicializando media4          
+        *(media4 + i) = 0; 
+    }
+    
+    for( k=0; k<10; k++ ){                          // Looping para Validação estatística
+        for( tam = 1; tam <= TAM; tam++ ){          // neste FOR definimos o número de conjuntos a serem criados
+            conjunto = malloc(tam * sizeof(int));   // alocação de memória para o vetor, conforme o número de elementos
+
+            valor = tam;
+            for( i=0; i<tam; i++ ){
+            *(conjunto + i) = valor;            // aritmética de ponteiros
+            valor--;                      
+        }
+            
+        Arvore_Avl* a = criar_avl();
+        for(i = 0; i < tam; i++){
+            adicionar_Avl(a, *(conjunto + i));  // adicionando todos as chaves do conjunto na árvore criada
+        }
+
+        *( media4 + tam - 1 ) = *( media4 + tam - 1 ) + monitoramento_Avl_01 + monitoramento_Avl_02;
+
+        monitoramento_Avl_01 = 0;
+        monitoramento_Avl_02 = 0;
+
+        free (conjunto);              // desalocando a memória    
+        }
+    }
+
+    printf("\n Complexidade Total AVL: \n");
+    for(i = 0; i < TAM; i++){
+        printf("%d ", *(media4 + i)/10);    // imprime a média do conteúdo desta região de memória
+    }
+    free (media4);                          // desalocando a memória
+    printf("\n");  
+}
+
+void media5() {
+
+    int *conjunto, *media5;
+    int i, j, k, igual, valor, tam;
+
+    media5 = malloc(TAM * sizeof(int));             // vetor de respostas, conforme o número de conjuntos
+
+    
+    for( i=0; i<TAM; i++ ){                         // inicializando media5          
+        *(media5 + i) = 0; 
+    }
+    
+    for( k=0; k<10; k++ ){                          // Looping para Validação estatística
+        for( tam = 1; tam <= TAM; tam++ ){          // neste FOR definimos o número de conjuntos a serem criados
+            conjunto = malloc(tam * sizeof(int));   // alocação de memória para o vetor, conforme o número de elementos
+
+            valor = tam;
+            for( i=0; i<tam; i++ ){
+            *(conjunto + i) = valor;            // aritmética de ponteiros
+            valor--;                      
+        }
+            
+        ArvoreB* a = criaArvore_b(1);           // Quanto maior a ordem da árvore, menos nós são criados!
+            for(i = 0; i < tam; i++){
+                adicionaChave_b(a, *(conjunto + i));// adicionando todos as chaves do conjunto na árvore criada
+            }
+
+            *( media5 + tam - 1 ) = *( media5 + tam - 1 ) + monitoramento_B_01 + monitoramento_B_02;
+
+            monitoramento_B_01 = 0;
+            monitoramento_B_02 = 0;
+
+            free (conjunto);              // desalocando a memória  
+        }
+    }
+
+    printf("\n Complexidade Total B: \n");
+    for(i = 0; i < TAM; i++){
+        printf("%d ", *(media5 + i)/10);    // imprime a média do conteúdo desta região de memória
+    }
+    free (media5);                          // desalocando a memória
+    printf("\n");  
+}
+
+void media6() {
+
+    int *conjunto, *media6;
+    int i, j, k, igual, valor, tam;
+
+    media6 = malloc(TAM * sizeof(int));             // vetor de respostas, conforme o número de conjuntos
+
+    
+    for( i=0; i<TAM; i++ ){                         // inicializando media6          
+        *(media6 + i) = 0; 
+    }
+    
+    for( k=0; k<10; k++ ){                          // Looping para Validação estatística
+        for( tam = 1; tam <= TAM; tam++ ){          // neste FOR definimos o número de conjuntos a serem criados
+            conjunto = malloc(tam * sizeof(int));   // alocação de memória para o vetor, conforme o número de elementos
+
+            valor = tam;
+            for( i=0; i<tam; i++ ){
+            *(conjunto + i) = valor;            // aritmética de ponteiros
+            valor--;                      
+        }
+            
+        Arvore_Rb* a = criar_rb();          
+            for(i = 0; i < tam; i++){
+                adicionar_rb(a, *(conjunto + i));// adicionando todos as chaves do conjunto na árvore criada
+            }
+
+            *( media6 + tam - 1 ) = *( media6 + tam - 1 ) + monitoramento_RB_01 + monitoramento_RB_02;
+
+            monitoramento_RB_01 = 0;
+            monitoramento_RB_02 = 0;
+
+            free (conjunto);              // desalocando a memória   
+        }
+    }
+
+    printf("\n Complexidade Total Rubro-negra: \n");
+    for(i = 0; i < TAM; i++){
+        printf("%d ", *(media6 + i)/10);    // imprime a média do conteúdo desta região de memória
+    }
+    free (media6);                          // desalocando a memória
+    printf("\n");  
 }
 
 int main() {
-  printf("\n�rvore AVL\n");
-  test_avl_tree();
-  printf("\n\n�rvore B\n");
-  test_b_tree();
-  printf("\n\n�rvore Rubro Negra\n");
-  test_rb_tree();
-  monitoramento();
+    printf("\n CASO MEDIO - CONJUNTOS DE CHAVES ALEATORIAS:\n");
+    media1();
+    media2();
+    media3();
+    
+    printf("\n PIOR CASO - CONJUNTOS DE CHAVES EM ORDEM DECRESCENTE:\n");
+    media4();
+    media5();
+    media6();
 
-  return 0;
+    return 0;
 }
 
 // Main
 // ****************************
+
+  /*printf("\nÁrvore AVL\n");
+  test_avl_tree();
+  printf("\n\nÁrvore B\n");
+  test_b_tree();
+  printf("\n\nÁrvore Rubro Negra\n");
+  test_rb_tree();
+  monitoramento();
+  */
